@@ -99,7 +99,88 @@ const discard_outclassed_armors = (valid_armors, required_skills) => {
     });
 }
 
+/**
+ * Get a list of permutations of given armor combined with 
+ * all possible decorations to choose from.
+ * 
+ * SkillPoint {
+ *  name,
+ *  points
+ * }
+ * 
+ * DecoratedArmor {
+ *  SkillPoint[],
+ *  armor_id,
+ *  decoration_id[]
+ * }
+ * 
+ * @param {*} armor 
+ * @param {*} possible_decorations 
+ * @return {DecoratedArmor[]} A list of decorated armors
+ */
+const insert_decorations = (armor, possible_decorations) => {
+    // Returns a DecoratedArmor
+    const make_decorated_armor = (used_decorations) => {
+        // TODO: add total skill points after adding all decorations to armor
+        return {
+            "skill-points": [],
+            "armor-id": armor["id"],
+            "decoration-ids": used_decorations.map(dec => dec["id"])
+        }
+    };
+
+    const complete_decorations = get_complete_decorations(armor, 
+                                                        possible_decorations);
+    const slots = armor["slots"];
+    const result = [];
+    let curr_slots = slots;
+    for (let i = 0; i < complete_decorations.length; i++) {
+        curr_slots = slots;
+
+        const i_slots = complete_decorations[i]["slots"];
+        if (curr_slots - i_slots < 0) {
+            continue;
+        } else if (curr_slots - i_slots === 0) {
+            // TODO
+            result.push({}); // all decorations used so far
+            continue;
+        } else { // curr_slots > i_slots
+            curr_slots -= i_slots;
+        }
+        for (let j = i+1; j < complete_decorations.length; j++) {
+            const j_slots = complete_decorations[j]["slots"];
+            // TODO
+            for (let k = j+1; k < complete_decorations.length; k++) {
+                const k_slots = complete_decorations[k]["slots"];
+                // TODO
+            }
+        }
+    }
+};
+
+// Add ('armor slot' - 1) additional decorations into the possible list for
+// each slot-1 decorations.
+const get_complete_decorations = (armor, possible_decorations) => {
+    const result = [];
+    possible_decorations.forEach((decoration) => {
+        if (decoration["slots"] === 1) {
+            for (let i = 0; i < armor["slots"]; i++) {
+                result.push(decoration);
+            }
+        } else {
+            result.push(decoration);
+        }
+    });
+    return result;
+};
+
 // const skill_names = ["Health -30"];
 // const skills = get_required_skills(skill_names);
 // console.log(get_valid_armors(skills).length);
 // console.log(discard_outclassed_armors(get_valid_armors(skills), skills));
+
+// const skill_names = ["Attack Up (Small)"];
+// const skills = get_required_skills(skill_names);
+// console.log(get_valid_armors(skills)[10]);
+// console.log(get_complete_decorations(get_valid_armors(skills)[10], get_valid_decorations(skills)))
+
