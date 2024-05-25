@@ -67,3 +67,39 @@ const get_required_skills = (required_skill_names) => {
     });
 };
 
+/**
+ * Filter a list of armors so that for every armor, 
+ * its required skill points would not be outclassed
+ * by other armors in the list. Outclassed means that
+ * every required skill points has been surpassed by
+ * another armor in the same & its slot number is less
+ * than its competitor.
+ * 
+ * @param {Armor[]} valid_armors A list of valid armors
+ * @param {Skill[]} required_skills A list of required skills
+ * @return {Armor[]} The armors not being outclassed by other armors in the same list
+ */
+const discard_outclassed_armors = (valid_armors, required_skills) => {
+    return valid_armors.filter(curr => {
+        return !valid_armors.some(competitor => {
+            // Don't compare itself
+            if (curr["id"] === competitor["id"]) return false;
+            // Check if the competitor will 'win'
+            return required_skills.every(required_skill => {
+                const curr_point_for_skill = curr["skill-points"]
+                    .find(skill_point => skill_point["name"] === required_skill["skill-point"])["points"];
+                const competitor_point_for_skill = competitor["skill-points"]
+                    .find(skill_point => skill_point["name"] === required_skill["skill-point"])["points"];
+                
+                return required_skill["points"] > 0 ? 
+                    curr_point_for_skill <= competitor_point_for_skill : 
+                    curr_point_for_skill > competitor_point_for_skill;
+            }) && curr["slots"] <= competitor["slots"];
+        });
+    });
+}
+
+// const skill_names = ["Health -30"];
+// const skills = get_required_skills(skill_names);
+// console.log(get_valid_armors(skills).length);
+// console.log(discard_outclassed_armors(get_valid_armors(skills), skills));
