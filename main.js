@@ -73,7 +73,8 @@ const get_required_skills = (required_skill_names) => {
  * by other armors in the list. Outclassed means that
  * every required skill points has been surpassed by
  * another armor in the same & its slot number is less
- * than its competitor.
+ * than its competitor. An armor won't be outclassed
+ * by armors from other parts.
  * 
  * @param {Armor[]} valid_armors A list of valid armors
  * @param {Skill[]} required_skills A list of required skills
@@ -84,6 +85,7 @@ const discard_outclassed_armors = (valid_armors, required_skills) => {
         return !valid_armors.some(competitor => {
             // Don't compare itself
             if (curr["id"] === competitor["id"]) return false;
+            if (curr["part"] !== competitor["part"]) return false;
             // Check if the competitor will 'win'
             return required_skills.every(required_skill => {
                 const curr_point_for_skill = curr["skill-points"]
