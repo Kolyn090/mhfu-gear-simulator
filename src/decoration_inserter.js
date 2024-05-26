@@ -56,9 +56,9 @@ const insert_decorations = (armor, possible_decorations) => {
                                                             complete_decorations[j],
                                                             complete_decorations[k]]));
                     continue;
-                } else {
-                    curr_slots -= k_slots;
                 }
+                // Unreachable condition
+                // The occupied slots are greater than 3, which is impossible in this case
             }
         }
     }
