@@ -19,42 +19,40 @@
  * @return {DecoratedArmor[]} A list of decorated armors
  */
 const insert_decorations = (armor, possible_decorations) => {
-    const complete_decorations = get_complete_decorations(armor, 
-                                                        possible_decorations);
     const slots = armor["slots"];
     const result = [];
     let curr_slots = slots;
-    for (let i = 0; i < complete_decorations.length; i++) {
+    for (let i = 0; i < possible_decorations.length; i++) {
         curr_slots = slots;
-        const i_slots = complete_decorations[i]["slots"];
+        const i_slots = possible_decorations[i]["slots"];
         if (curr_slots - i_slots < 0) {
             continue;
         } else if (curr_slots - i_slots === 0) {
             // all decorations used so far
-            result.push(make_decorated_armor(armor, [complete_decorations[i]]));
+            result.push(make_decorated_armor(armor, [possible_decorations[i]]));
             continue;
         } else { // curr_slots > i_slots
             curr_slots -= i_slots;
         }
-        for (let j = i+1; j < complete_decorations.length; j++) {
-            const j_slots = complete_decorations[j]["slots"];
+        for (let j = 0; j < possible_decorations.length; j++) {
+            const j_slots = possible_decorations[j]["slots"];
             if (curr_slots - j_slots < 0) {
                 continue;
             } else if (curr_slots - j_slots === 0) {
-                result.push(make_decorated_armor(armor, [complete_decorations[i], 
-                                                        complete_decorations[j]]));
+                result.push(make_decorated_armor(armor, [possible_decorations[i], 
+                    possible_decorations[j]]));
                 continue;
             } else { // curr_slots > j_slots
                 curr_slots -= j_slots;
             }
-            for (let k = j+1; k < complete_decorations.length; k++) {
-                const k_slots = complete_decorations[k]["slots"];
+            for (let k = 0; k < possible_decorations.length; k++) {
+                const k_slots = possible_decorations[k]["slots"];
                 if (curr_slots - k_slots < 0) {
                     continue;
                 } else if (curr_slots - k_slots === 0) {
-                    result.push(make_decorated_armor(armor, [complete_decorations[i], 
-                                                            complete_decorations[j],
-                                                            complete_decorations[k]]));
+                    result.push(make_decorated_armor(armor, [possible_decorations[i], 
+                                                            possible_decorations[j],
+                                                            possible_decorations[k]]));
                     continue;
                 }
                 // Unreachable condition
@@ -63,7 +61,7 @@ const insert_decorations = (armor, possible_decorations) => {
         }
     }
     return result;
-};
+}; 
 
 // Add ('armor slot' - 1) additional decorations into the possible list for
 // each slot-1 decorations.
