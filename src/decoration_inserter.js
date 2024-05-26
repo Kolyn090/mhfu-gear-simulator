@@ -68,9 +68,11 @@ const insert_decorations = (armor, possible_decorations) => {
                                                             possible_decorations[j],
                                                             possible_decorations[k]]));
                     continue;
+                    /* c8 ignore start */
+                } else {
+                    throw new Error("Unreachable condition: The occupied slots are greater than 3, which is impossible in this case");
                 }
-                // Unreachable condition
-                // The occupied slots are greater than 3, which is impossible in this case
+                /* c8 ignore end */
             }
         }
     }
@@ -79,7 +81,9 @@ const insert_decorations = (armor, possible_decorations) => {
 }; 
 
 const is_array_equal= (a, b) => {
+    /* c8 ignore next */
     if (a === b) return true;
+    /* c8 ignore next */
     if (a === null || b === null) return false;
     if (a.length !== b.length) return false;
     const a_sort = a.sort((x, y) => x-y);

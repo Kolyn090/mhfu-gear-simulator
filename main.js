@@ -1,9 +1,9 @@
-const getter = require('./getter');
+const getter = require('./src/getter');
 const get_valid_armors = getter.get_valid_armors;
 const get_valid_decorations = getter.get_valid_decorations;
 const get_required_skills = getter.get_required_skills;
 const discard_outclassed_armors = getter.discard_outclassed_armors;
-const insert_decorations = require('./decoration_inserter').insert_decorations;
+const insert_decorations = require('./src/decoration_inserter').insert_decorations;
 
 const brute_force = () => {
     const skill_names = ["High Grade Earplug", "Evade +2", "Health -30"];
