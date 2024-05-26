@@ -1,3 +1,8 @@
+const getter = require('../src/getter');
+const get_valid_armors = getter.get_valid_armors;
+const get_valid_decorations = getter.get_valid_decorations;
+const get_required_skills = getter.get_required_skills;
+const discard_outclassed_armors = getter.discard_outclassed_armors;
 const insert_decorations = require('../src/decoration_inserter').insert_decorations;
 
 const test_armor2 = {
@@ -245,4 +250,66 @@ it('insertes one slot-1 and one slot-2 decorations on a slot-3 armor', () => {
 it('cannot insert a slot-3 decoration on a slot-2 armor', () => {
     const insert3 = insert_decorations(test_armor2, [test_decoration3]);
     expect(insert3.length).toBe(0);
+});
+
+it('does not contain duplicate from the decorated armor list', () => {
+    const skill_names = ["High Grade Earplug", "Evade +2", "Health -30"];
+    const required_skills = get_required_skills(skill_names);
+    const valid_armors = get_valid_armors(required_skills);
+    const valid_decorations = get_valid_decorations(required_skills);
+    const optimal_armors = discard_outclassed_armors(valid_armors, required_skills);
+    const decorated_armors = optimal_armors.map(armor => insert_decorations(armor, valid_decorations)).flat();
+
+    const compare_decoration_ids = (ids1, ids2) => {
+        const ordered_list1 = ids1.sort((x, y) => x["id"] - y["id"]);
+        const ordered_list2 = ids2.sort((x, y) => x["id"] - y["id"]);
+        let result = ordered_list1.length === ordered_list2.length;
+        if (!result) return false;
+        for (let i = 0; i < ordered_list1.length; i++) {
+            if (ordered_list1[i]["id"] !== ordered_list2[i]["id"]) result = false;
+        }
+        return result;
+    };
+
+    const compare_skill_points = (sp1, sp2) => {
+        return sp1.every(skill_point1 => {
+            return sp2.some(skill_point2 => {
+                return skill_point2["name"] === skill_point1["name"] &&
+                        skill_point2["points"] === skill_point1["points"];
+            });
+        });
+    };
+
+    let data = "";
+    const push_to_data = (content) => {
+        data += content + '\n';
+    }
+    decorated_armors.map(x=>{
+        push_to_data("----------");
+        x["skill-points"].map(s => {
+            push_to_data(s["name"] + ": " + s["points"]);
+        });
+        push_to_data("armor_id: " + x["armor-id"]);
+        push_to_data("decoration_ids: " + x["decoration-ids"]);
+        push_to_data("++++++++++");
+    });
+    require('fs').writeFileSync('./output.txt', data);
+    let result = true;
+    for (let i = 0; i < decorated_armors.length; i++) {
+        for (let j = 0; j < decorated_armors.length; j++) {
+            if (i === j) continue;
+            const is_armor_id_same = decorated_armors[i]["armor-id"] === decorated_armors[j]["armor-id"];
+            const are_decoration_ids_same = compare_decoration_ids(decorated_armors[i]["decoration-ids"], 
+                                                                    decorated_armors[j]["decoration-ids"]);
+            const are_skill_points_same = compare_skill_points(decorated_armors[i]["skill-points"],
+                                                                    decorated_armors[j]["skill-points"]);
+            const is_the_same = is_armor_id_same && are_decoration_ids_same && are_skill_points_same;
+            if (is_the_same) {
+                console.log(decorated_armors[i]["decoration-ids"]);
+                result = false;
+                break;
+            }
+        }
+    }
+    expect(result).toBe(true);
 });
