@@ -261,23 +261,20 @@ it('does not contain duplicate from the decorated armor list', () => {
     const optimal_armors = discard_outclassed_armors(valid_armors, required_skills);
     const decorated_armors = optimal_armors.map(armor => insert_decorations(armor, valid_decorations)).flat();
 
-    const compare_decoration_ids = (ids1, ids2) => {
-        const ordered_list1 = ids1.sort((x, y) => x - y);
-        const ordered_list2 = ids2.sort((x, y) => x - y);
-        let result = ordered_list1.length === ordered_list2.length;
-        if (!result) return false;
-        for (let i = 0; i < ordered_list1.length; i++) {
-            if (ordered_list1[i] !== ordered_list2[i]) result = false;
-        }
-        return result;
-    };
-
+    const is_array_equal= (a, b) => {
+        if (a === b) return true;
+        if (a === null || b === null) return false;
+        if (a.length !== b.length) return false;
+        const a_sort = a.sort((x, y) => x-y);
+        const b_sort = b.sort((x, y) => x-y);
+        return a_sort.every((val, i) => val === b_sort[i]);
+    }
     let result = true;
     for (let i = 0; i < decorated_armors.length; i++) {
         for (let j = 0; j < decorated_armors.length; j++) {
             if (i === j) continue;
             const is_armor_id_same = decorated_armors[i]["armor-id"] === decorated_armors[j]["armor-id"];
-            const are_decoration_ids_same = compare_decoration_ids(decorated_armors[i]["decoration-ids"], 
+            const are_decoration_ids_same = is_array_equal(decorated_armors[i]["decoration-ids"], 
                                                                     decorated_armors[j]["decoration-ids"]);
             const is_the_same = is_armor_id_same && are_decoration_ids_same;
             if (is_the_same) {
@@ -286,5 +283,6 @@ it('does not contain duplicate from the decorated armor list', () => {
             }
         }
     }
+
     expect(result).toBe(true);
 });
