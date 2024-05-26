@@ -9,7 +9,6 @@
  * }
  * 
  * DecoratedArmor {
- *  SkillPoint[],
  *  armor_id,
  *  decoration_id[]
  * }
@@ -40,7 +39,7 @@ const insert_decorations = (armor, possible_decorations) => {
                 continue;
             } else if (curr_slots - j_slots === 0) {
                 result.push(make_decorated_armor(armor, [possible_decorations[i], 
-                    possible_decorations[j]]));
+                                                        possible_decorations[j]]));
                 continue;
             } else { // curr_slots > j_slots
                 curr_slots -= j_slots;
@@ -81,7 +80,16 @@ const get_complete_decorations = (armor, possible_decorations) => {
 };
 
 // Returns a DecoratedArmor
-const make_decorated_armor = (armor, used_decorations) => {
+const make_decorated_armor = (armor, used_decorations) => {    
+    return {
+        "armor-id": armor["id"],
+        "decoration-ids": used_decorations.map(dec => dec["id"])
+    }
+};
+
+const determine_skill_points_of = (decorated_armor, valid_armors, valid_decorations) => {
+    const armor = valid_armors.find(v=>v["id"] === decorated_armor["armor-id"]);
+    const used_decorations = decorated_armor["decoration-ids"].map(d=>valid_decorations.find(v=>v["id"] === d));
     const skill_map = new Map();
     
     armor["skill-points"].forEach(skill_point => {
@@ -107,14 +115,11 @@ const make_decorated_armor = (armor, used_decorations) => {
             "points": val
         });
     });
-    // TODO: remove skill points
-    return {
-        "skill-points": skill_points,
-        "armor-id": armor["id"],
-        "decoration-ids": used_decorations.map(dec => dec["id"])
-    }
+
+    return skill_points;
 };
 
 module.exports = {
-    insert_decorations: insert_decorations
+    insert_decorations: insert_decorations,
+    determine_skill_points_of: determine_skill_points_of
 };

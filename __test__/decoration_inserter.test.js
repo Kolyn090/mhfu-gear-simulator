@@ -4,6 +4,7 @@ const get_valid_decorations = getter.get_valid_decorations;
 const get_required_skills = getter.get_required_skills;
 const discard_outclassed_armors = getter.discard_outclassed_armors;
 const insert_decorations = require('../src/decoration_inserter').insert_decorations;
+const determine_skill_points_of = require('../src/decoration_inserter').determine_skill_points_of;
 
 const test_armor2 = {
     "id": 3853,
@@ -210,8 +211,8 @@ it('insertes three same slot-1 decoration on a slot-3 armor', () => {
     const insert1 = insert_decorations(test_armor3, [test_decoration1]);
     expect(insert1[0]["armor-id"]).toBe(3852);
     expect(insert1[0]["decoration-ids"][0]).toBe(0);
-    
-    const skill_points = insert1[0]["skill-points"];
+
+    const skill_points = determine_skill_points_of(insert1[0], [test_armor3], [test_decoration1]);
     expecting_points(skill_points, "SteadyHand", 2);
     expecting_points(skill_points, "Fate", -3);
     expecting_points(skill_points, "Constitutn", 2);
@@ -223,7 +224,7 @@ it('insertes one slot-3 decoration on a slot-3 armor', () => {
     expect(insert3[0]["armor-id"]).toBe(3852);
     expect(insert3[0]["decoration-ids"][0]).toBe(2);
     
-    const skill_points = insert3[0]["skill-points"];
+    const skill_points = determine_skill_points_of(insert3[0], [test_armor3], [test_decoration3]);
     expecting_points(skill_points, "SteadyHand", 2);
     expecting_points(skill_points, "Fate", -3);
     expecting_points(skill_points, "Constitutn", 2);
@@ -261,39 +262,16 @@ it('does not contain duplicate from the decorated armor list', () => {
     const decorated_armors = optimal_armors.map(armor => insert_decorations(armor, valid_decorations)).flat();
 
     const compare_decoration_ids = (ids1, ids2) => {
-        const ordered_list1 = ids1.sort((x, y) => x["id"] - y["id"]);
-        const ordered_list2 = ids2.sort((x, y) => x["id"] - y["id"]);
+        const ordered_list1 = ids1.sort((x, y) => x - y);
+        const ordered_list2 = ids2.sort((x, y) => x - y);
         let result = ordered_list1.length === ordered_list2.length;
         if (!result) return false;
         for (let i = 0; i < ordered_list1.length; i++) {
-            if (ordered_list1[i]["id"] !== ordered_list2[i]["id"]) result = false;
+            if (ordered_list1[i] !== ordered_list2[i]) result = false;
         }
         return result;
     };
 
-    const compare_skill_points = (sp1, sp2) => {
-        return sp1.every(skill_point1 => {
-            return sp2.some(skill_point2 => {
-                return skill_point2["name"] === skill_point1["name"] &&
-                        skill_point2["points"] === skill_point1["points"];
-            });
-        });
-    };
-
-    let data = "";
-    const push_to_data = (content) => {
-        data += content + '\n';
-    }
-    decorated_armors.map(x=>{
-        push_to_data("----------");
-        x["skill-points"].map(s => {
-            push_to_data(s["name"] + ": " + s["points"]);
-        });
-        push_to_data("armor_id: " + x["armor-id"]);
-        push_to_data("decoration_ids: " + x["decoration-ids"]);
-        push_to_data("++++++++++");
-    });
-    require('fs').writeFileSync('./output.txt', data);
     let result = true;
     for (let i = 0; i < decorated_armors.length; i++) {
         for (let j = 0; j < decorated_armors.length; j++) {
@@ -301,11 +279,8 @@ it('does not contain duplicate from the decorated armor list', () => {
             const is_armor_id_same = decorated_armors[i]["armor-id"] === decorated_armors[j]["armor-id"];
             const are_decoration_ids_same = compare_decoration_ids(decorated_armors[i]["decoration-ids"], 
                                                                     decorated_armors[j]["decoration-ids"]);
-            const are_skill_points_same = compare_skill_points(decorated_armors[i]["skill-points"],
-                                                                    decorated_armors[j]["skill-points"]);
-            const is_the_same = is_armor_id_same && are_decoration_ids_same && are_skill_points_same;
+            const is_the_same = is_armor_id_same && are_decoration_ids_same;
             if (is_the_same) {
-                console.log(decorated_armors[i]["decoration-ids"]);
                 result = false;
                 break;
             }
