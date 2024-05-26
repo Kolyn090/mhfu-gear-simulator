@@ -60,6 +60,7 @@ const insert_decorations = (armor, possible_decorations) => {
             }
         }
     }
+    // TODO: remove duplication. In theory, currently, there are at least 2 extra copied for each element.
     return result;
 }; 
 
@@ -106,7 +107,7 @@ const make_decorated_armor = (armor, used_decorations) => {
             "points": val
         });
     });
-
+    // TODO: remove skill points
     return {
         "skill-points": skill_points,
         "armor-id": armor["id"],
