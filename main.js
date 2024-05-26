@@ -6,16 +6,85 @@ const discard_outclassed_armors = getter.discard_outclassed_armors;
 const insert_decorations = require('./src/decoration_inserter').insert_decorations;
 const get_decorated_armor_complete = require('./src/armor_processor').get_decorated_armor_complete;
 const categorize_armor_complete = require('./src/armor_processor').categorize_armor_complete;
+const determine_skill_points_of_complete = require('./src/armor_processor').determine_skill_points_of_complete;
 
 const brute_force = () => {
-    const skill_names = ["High Grade Earplug", "Evade +2", "Health -30"];
+    const skill_names = ["Sharpness +1", "Reckless Abandon +2", "Sharp Sword"];
     const required_skills = get_required_skills(skill_names);
-    const valid_armors = get_valid_armors(required_skills);
+    const valid_armors = get_valid_armors(required_skills).filter(a=>a["hunter-type"] !== "G");
     const valid_decorations = get_valid_decorations(required_skills);
     const optimal_armors = discard_outclassed_armors(valid_armors, required_skills);
     const decorated_armors = optimal_armors.map(armor => insert_decorations(armor, valid_decorations)).flat();
     const decorated_armors_complete = decorated_armors.map(a =>get_decorated_armor_complete(a, valid_armors, valid_decorations));
-    
+    const parts = categorize_armor_complete(decorated_armors_complete);
+
+    const is_gear_satisfy_requirement = (gear, required_skills) => {
+        const total_points = get_total_points(gear);
+        return required_skills.every(skill => {
+            const from_total = total_points.find(x => x["name"] === skill["skill-point"]);
+            if (from_total === undefined) 
+            {
+                // console.log(skill["name"]);
+                // console.log("You have: " + 0);
+                // console.log("Requires: " + skill["points"]);
+                return false
+            };
+            const from_total_points = from_total["points"];
+            const required_points = skill["points"];
+            // console.log(skill["name"]);
+            // console.log("You have: " + from_total_points);
+            // console.log("Requires: " + required_points);
+            if (from_total_points >= required_points) return true;
+            return false;
+        });
+    };
+
+    const get_total_points = (gear) => {
+        const skill_map = new Map();
+        for (let i = 0; i < gear.length; i++) {
+            const skill_points = determine_skill_points_of_complete(gear[i], valid_armors, valid_decorations);
+            skill_points.map(skill_point => {
+                if (skill_map.has(skill_point["name"])) {
+                    skill_map.set(skill_point["name"], skill_map.get(skill_point["name"])+ skill_point["points"]);
+                } else {
+                    skill_map.set(skill_point["name"], skill_point["points"]);
+                }
+            });
+        }
+        const result = [];
+        for ([key, val] of skill_map.entries()) {
+            result.push({
+                "name": key,
+                "points": val
+            });
+        }
+        return result;
+    };
+
+    for (helmet of parts["helmet"]) {
+        for (plate of parts["plate"]) {
+            for (gauntlet of parts["gauntlet"]) {
+                for (waist of parts["waist"]) {
+                    for (legging of parts["legging"]) {
+                        if (is_gear_satisfy_requirement([helmet, plate, gauntlet, waist, legging], required_skills)) {
+                            console.log(helmet["armor"]["name"] + ", ", 
+                                        plate["armor"]["name"] + ", ", 
+                                        gauntlet["armor"]["name"] + ", ", 
+                                        waist["armor"]["name"] + ", ", 
+                                        legging["armor"]["name"]);
+                            console.log("helmet: ", helmet["decorations"],
+                                        "plate: ", plate["decorations"],
+                                        "gauntlet: ", gauntlet["decorations"],
+                                        "waist: ", waist["decorations"],
+                                        "legging: ", legging["decorations"]);
+                            console.log(get_total_points([helmet, plate, gauntlet, waist, legging]))
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
 };
 
 brute_force();
