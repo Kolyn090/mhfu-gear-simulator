@@ -38,7 +38,22 @@ const determine_skill_points_of = (decorated_armor, valid_armors, valid_decorati
     return skill_points;
 };
 
+const categorize_armor_complete = (decorated_armors_complete) => {
+    const result = {
+        "helmet": [],
+        "plate": [],
+        "gauntlet": [],
+        "waist": [],
+        "legging": []
+    };
+    for (let i = 0; i < decorated_armors_complete.length; i++) {
+        result[decorated_armors_complete[i]["armor"]["part"]].push(decorated_armors_complete[i]);
+    }
+    return result;
+}
+
 module.exports = {
     determine_skill_points_of: determine_skill_points_of,
-    get_decorated_armor_complete: get_decorated_armor_complete
+    get_decorated_armor_complete: get_decorated_armor_complete,
+    categorize_armor_complete: categorize_armor_complete
 };
