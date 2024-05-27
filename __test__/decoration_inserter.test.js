@@ -4,7 +4,7 @@ const get_valid_decorations = getter.get_valid_decorations;
 const get_required_skills = getter.get_required_skills;
 const discard_outclassed_armors = getter.discard_outclassed_armors;
 const insert_decorations = require('../src/decoration_inserter').insert_decorations;
-const determine_skill_points_of = require('../src/armor_processor').determine_skill_points_of;
+const determine_skill_points_of = require('../src/equipment_processor').determine_skill_points_of;
 
 const test_armor2 = {
     "id": 3853,
