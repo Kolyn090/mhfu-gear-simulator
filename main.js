@@ -7,7 +7,6 @@ const discard_outclassed_decorated_armors = getter.discard_outclassed_decorated_
 const insert_decorations = require('./src/decoration_inserter').insert_decorations;
 const categorize_decorated_equipments = require('./src/equipment_processor').categorize_decorated_equipments;
 
-
 const get_data = (skill_names, armor_filter, weapon_slots) => {
     const required_skills = get_required_skills(skill_names);
     const valid_armors = armor_filter(get_valid_armors(required_skills));
