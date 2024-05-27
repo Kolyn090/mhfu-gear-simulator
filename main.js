@@ -5,8 +5,8 @@ const get_required_skills = getter.get_required_skills;
 const discard_outclassed_armors = getter.discard_outclassed_armors;
 const discard_outclassed_armors_complete = getter.discard_outclassed_armors_complete;
 const insert_decorations = require('./src/decoration_inserter').insert_decorations;
-const get_decorated_equipment_complete = require('./src/armor_processor').get_decorated_equipment_complete;
-const categorize_equipment_complete = require('./src/armor_processor').categorize_equipment_complete;
+const get_decorated_equipment_complete = require('./src/equipment_processor').get_decorated_equipment_complete;
+const categorize_equipment_complete = require('./src/equipment_processor').categorize_equipment_complete;
 
 
 const brute_force = (skill_names, armor_filter, weapon_slots) => {
