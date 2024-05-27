@@ -80,27 +80,27 @@ const print_result = (helmet, plate, gauntlet, waist, legging, weapon) => {
     console.log(get_total_points([helmet, plate, gauntlet, waist, legging, weapon]));
 };
 
-const is_gear_satisfy_requirement = (gear, required_skills) => {
-    const temp = {};
-    required_skills.map(required_skill => {
-        temp[required_skill["skill-point"]] = required_skill["points"]
-    });
-
-    for (let i = 0; i < gear.length; i++) {
-        const skill_points = gear[i]["skill-points"];
-        skill_points.map(skill_point => {
-            if (temp[skill_point["name"]] !== undefined)
-                temp[skill_point["name"]] -= skill_point["points"];
-        });
-    }
-    return Object.values(temp).every(v => v <= 0);
-};
-
 const brute_force = (skill_names, armor_filter, weapon_slots) => {
     const data = get_data(skill_names, armor_filter, weapon_slots);
     const required_skills = data[0];
     const decorated_weapon_complete = data[1];
     const parts = data[2];
+
+    const is_gear_satisfy_requirement = (gear, required_skills) => {
+        const temp = {};
+        required_skills.map(required_skill => {
+            temp[required_skill["skill-point"]] = required_skill["points"];
+        });
+    
+        for (let i = 0; i < gear.length; i++) {
+            const skill_points = gear[i]["skill-points"];
+            skill_points.map(skill_point => {
+                if (temp[skill_point["name"]] !== undefined)
+                    temp[skill_point["name"]] -= skill_point["points"];
+            });
+        }
+        return Object.values(temp).every(v => v <= 0);
+    };
 
     for (helmet of parts["helmet"]) {
         for (plate of parts["plate"]) {
@@ -120,7 +120,73 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
     }
 };
 
+const optimized = (skill_names, armor_filter, weapon_slots) => {
+    const data = get_data(skill_names, armor_filter, weapon_slots);
+    const required_skills = data[0];
+    const decorated_weapon_complete = data[1];
+    const parts = data[2];
+
+    const get_skill_points_so_far = (prev, armor, required_skills) => {
+        const result = {};
+        Object.assign(result, prev);
+        armor["skill-points"].map(skill_point => {
+            if (required_skills.find(required_skill => required_skill["skill-point"] === skill_point["name"])) {
+                if (result[skill_point["name"]] !== undefined) {
+                    result[skill_point["name"]] += skill_point["points"];
+                }
+                else {
+                    result[skill_point["name"]] = skill_point["points"];
+                }
+            }
+        });
+        return result;
+    }
+
+    const is_gear_satisfy_requirement = (so_far, required_skills) => {
+        return required_skills.every(required_skill => {
+            return Object.keys(so_far).some(skill_name => {
+                if (required_skill["skill-point"] === skill_name) {
+                    return so_far[skill_name] >= required_skill["points"];
+                }
+                else {
+                    return false;
+                }
+            });
+        });
+    };
+
+    for (helmet of parts["helmet"]) {
+        const so_far0 = get_skill_points_so_far({}, helmet, required_skills);
+        for (plate of parts["plate"]) {
+            const so_far1 = get_skill_points_so_far(so_far0, plate, required_skills);
+            for (gauntlet of parts["gauntlet"]) {
+                const so_far2 = get_skill_points_so_far(so_far1, gauntlet, required_skills);
+                for (waist of parts["waist"]) {
+                    const so_far3 = get_skill_points_so_far(so_far2, waist, required_skills);
+                    for (legging of parts["legging"]) {
+                        const so_far4 = get_skill_points_so_far(so_far3, legging, required_skills);
+                        for (m_weapon of decorated_weapon_complete) {
+                            const so_far5 = get_skill_points_so_far(so_far4, m_weapon, required_skills);
+                            if (is_gear_satisfy_requirement(so_far5, required_skills)) {
+                                print_result(helmet, plate, gauntlet, waist, legging, m_weapon);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 const skill_names = ["Sharpness +1", "Reckless Abandon +3", "Sharp Sword"];
 const filter = (armor) => armor.filter(a=>a["hunter-type"] !== "G").filter(a=>a["rare"]>=5);
 const weapon_slots = 1;
-brute_force(skill_names, filter, weapon_slots);
+
+// console.time("Brute Force");
+// brute_force(skill_names, filter, weapon_slots);
+// console.timeEnd("Brute Force");
+
+console.time('Optimized');
+optimized(skill_names, filter, weapon_slots);
+console.timeEnd('Optimized');
