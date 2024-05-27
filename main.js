@@ -9,7 +9,7 @@ const get_decorated_equipment_complete = require('./src/equipment_processor').ge
 const categorize_equipment_complete = require('./src/equipment_processor').categorize_equipment_complete;
 
 
-const brute_force = (skill_names, armor_filter, weapon_slots) => {
+const get_data = (skill_names, armor_filter, weapon_slots) => {
     const required_skills = get_required_skills(skill_names);
     const valid_armors = armor_filter(get_valid_armors(required_skills));
     const valid_decorations = get_valid_decorations(required_skills);
@@ -28,34 +28,29 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
         return result;
     });
     const optimal_dec_armors = discard_outclassed_armors_complete(decorated_armors_complete, required_skills);
+    const decorated_weapon_complete = decorated_weapon.map(w => get_decorated_equipment_complete(w, [weapon], valid_decorations));
+    const parts = categorize_equipment_complete(optimal_dec_armors);
+    const result = [];
+    result.push(required_skills);
+    result.push(decorated_weapon_complete);
+    result.push(parts);
 
-    require('fs').writeFileSync('./output.json', JSON.stringify(optimal_dec_armors.map(a=>{
+    print_decorated_armors_to_output(optimal_dec_armors);
+
+    return result;
+};
+
+const print_decorated_armors_to_output = (dec_armors) => {
+    require('fs').writeFileSync('./output.json', JSON.stringify(dec_armors.map(a=>{
         return {
             "armor": a["equipment"]["name"],
             "part": a["equipment"]["part"],
             "decorations": a["decorations-name"]
         }
     }), null, '    '));
+};
 
-    const decorated_weapon_complete = decorated_weapon.map(w => get_decorated_equipment_complete(w, [weapon], valid_decorations));
-    const parts = categorize_equipment_complete(optimal_dec_armors);
-
-    const is_gear_satisfy_requirement = (gear, required_skills) => {
-        const temp = {};
-        required_skills.map(required_skill => {
-            temp[required_skill["skill-point"]] = required_skill["points"]
-        });
-
-        for (let i = 0; i < gear.length; i++) {
-            const skill_points = gear[i]["skill-points"];
-            skill_points.map(skill_point => {
-                if (temp[skill_point["name"]] !== undefined)
-                    temp[skill_point["name"]] -= skill_point["points"];
-            });
-        }
-        return Object.values(temp).every(v => v <= 0);
-    };
-
+const print_result = (helmet, plate, gauntlet, waist, legging, weapon) => {
     const get_total_points = (gear) => {
         const result = {};
         for (let i = 0; i < gear.length; i++) {
@@ -69,6 +64,43 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
         }
         return result;
     };
+    
+    console.log(helmet["equipment"]["name"] + ", ", 
+                plate["equipment"]["name"] + ", ", 
+                gauntlet["equipment"]["name"] + ", ", 
+                waist["equipment"]["name"] + ", ", 
+                legging["equipment"]["name"]);
+    console.log("\n helmet: \t", helmet["decorations-name"], "\n",
+                "plate: \t", plate["decorations-name"], "\n",
+                "gauntlet: \t", gauntlet["decorations-name"], "\n",
+                "waist: \t", waist["decorations-name"], "\n",
+                "legging: \t", legging["decorations-name"], "\n",
+                "weapon: \t", weapon["decorations-name"], "\n");
+    
+    console.log(get_total_points([helmet, plate, gauntlet, waist, legging, weapon]));
+};
+
+const is_gear_satisfy_requirement = (gear, required_skills) => {
+    const temp = {};
+    required_skills.map(required_skill => {
+        temp[required_skill["skill-point"]] = required_skill["points"]
+    });
+
+    for (let i = 0; i < gear.length; i++) {
+        const skill_points = gear[i]["skill-points"];
+        skill_points.map(skill_point => {
+            if (temp[skill_point["name"]] !== undefined)
+                temp[skill_point["name"]] -= skill_point["points"];
+        });
+    }
+    return Object.values(temp).every(v => v <= 0);
+};
+
+const brute_force = (skill_names, armor_filter, weapon_slots) => {
+    const data = get_data(skill_names, armor_filter, weapon_slots);
+    const required_skills = data[0];
+    const decorated_weapon_complete = data[1];
+    const parts = data[2];
 
     for (helmet of parts["helmet"]) {
         for (plate of parts["plate"]) {
@@ -77,19 +109,7 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
                     for (legging of parts["legging"]) {
                         for (m_weapon of decorated_weapon_complete) {
                             if (is_gear_satisfy_requirement([helmet, plate, gauntlet, waist, legging, m_weapon], required_skills)) {
-                                console.log(helmet["equipment"]["name"] + ", ", 
-                                            plate["equipment"]["name"] + ", ", 
-                                            gauntlet["equipment"]["name"] + ", ", 
-                                            waist["equipment"]["name"] + ", ", 
-                                            legging["equipment"]["name"]);
-                                console.log("\n helmet: \t", helmet["decorations-name"], "\n",
-                                            "plate: \t", plate["decorations-name"], "\n",
-                                            "gauntlet: \t", gauntlet["decorations-name"], "\n",
-                                            "waist: \t", waist["decorations-name"], "\n",
-                                            "legging: \t", legging["decorations-name"], "\n",
-                                            "weapon: \t", m_weapon["decorations-name"], "\n");
-                                
-                                console.log(get_total_points([helmet, plate, gauntlet, waist, legging, m_weapon]))
+                                print_result(helmet, plate, gauntlet, waist, legging, m_weapon);
                                 return;
                             }
                         }
