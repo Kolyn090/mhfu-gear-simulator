@@ -82,7 +82,7 @@ const get_required_skills = (required_skill_names) => {
  */
 const discard_outclassed_armors = (valid_armors, required_skills) => {
     return valid_armors.filter(curr => {
-        return !valid_armors.some(competitor => {
+        const result = !valid_armors.some(competitor => {
             // Don't compare itself
             if (curr["id"] === competitor["id"]) return false;
             if (curr["part"] !== competitor["part"]) return false;
@@ -101,6 +101,35 @@ const discard_outclassed_armors = (valid_armors, required_skills) => {
                     curr_point_for_skill > competitor_point_for_skill;
             }) && curr["slots"] <= competitor["slots"];
         });
+        // if (!result) {
+        //     console.log(curr["name"]);
+        // }
+        return result;
+    });
+};
+
+const discard_outclassed_armors_complete = (decorated_armors_complete, required_skills) => {
+    return decorated_armors_complete.filter(curr => {
+        const result = !decorated_armors_complete.some(competitor => {
+            if (curr["id"] === competitor["id"]) return false;
+            if (curr["armor"]["part"] !== competitor["armor"]["part"]) return false;
+            // Check if the competitor will 'win'
+            return required_skills.every(required_skill => {
+                const curr_skill_point = curr["skill-points"]
+                    .find(skill_point => skill_point["name"] === required_skill["skill-point"]);
+                const curr_point_for_skill = curr_skill_point ? curr_skill_point["points"] : 0;
+                const competitor_skill_point = competitor["skill-points"]
+                    .find(skill_point => skill_point["name"] === required_skill["skill-point"]);
+                const competitor_point_for_skill = competitor_skill_point ? competitor_skill_point["points"] : 0;
+                return required_skill["points"] > 0 ? 
+                    curr_point_for_skill < competitor_point_for_skill : 
+                    curr_point_for_skill > competitor_point_for_skill;
+            });
+        });
+        // if (!result) {
+        //     console.log(curr["armor"]["name"]);
+        // }
+        return result;
     });
 };
 
@@ -108,5 +137,6 @@ module.exports = {
     get_valid_armors: get_valid_armors,
     get_valid_decorations: get_valid_decorations,
     get_required_skills: get_required_skills,
-    discard_outclassed_armors: discard_outclassed_armors
+    discard_outclassed_armors: discard_outclassed_armors,
+    discard_outclassed_armors_complete: discard_outclassed_armors_complete
 };

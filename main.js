@@ -3,16 +3,17 @@ const get_valid_armors = getter.get_valid_armors;
 const get_valid_decorations = getter.get_valid_decorations;
 const get_required_skills = getter.get_required_skills;
 const discard_outclassed_armors = getter.discard_outclassed_armors;
+const discard_outclassed_armors_complete = getter.discard_outclassed_armors_complete;
 const insert_decorations = require('./src/decoration_inserter').insert_decorations;
 const get_decorated_armor_complete = require('./src/armor_processor').get_decorated_armor_complete;
 const categorize_armor_complete = require('./src/armor_processor').categorize_armor_complete;
 const determine_skill_points_of_complete = require('./src/armor_processor').determine_skill_points_of_complete;
 
+
 const brute_force = () => {
     const skill_names = ["Sharpness +1", "Reckless Abandon +3", "Sharp Sword"];
     const required_skills = get_required_skills(skill_names);
     const valid_armors = get_valid_armors(required_skills).filter(a=>a["hunter-type"] !== "G");
-    console.log(valid_armors.map(a=>a["name"]));
     const valid_decorations = get_valid_decorations(required_skills);
     const optimal_armors = discard_outclassed_armors(valid_armors, required_skills);
     const decorated_armors = optimal_armors.map(armor => insert_decorations(armor, valid_decorations)).flat();
@@ -23,9 +24,17 @@ const brute_force = () => {
         "skill-points": []
     };
     const decorated_weapon = insert_decorations(weapon, valid_decorations);
-    const decorated_armors_complete = decorated_armors.map(a =>get_decorated_armor_complete(a, valid_armors, valid_decorations));
+    const decorated_armors_complete = decorated_armors.map((a, i) => {
+        const result = get_decorated_armor_complete(a, valid_armors, valid_decorations);
+        result["id"] = i;
+        return result;
+    });
+    const optimal_dec_armors = discard_outclassed_armors_complete(decorated_armors_complete, required_skills);
+    // console.log(decorated_armors_complete.length);
+    // console.log(optimal_dec_armors.length);
+
     const decorated_weapon_complete = decorated_weapon.map(w => get_decorated_armor_complete(w, [weapon], valid_decorations));
-    const parts = categorize_armor_complete(decorated_armors_complete);
+    const parts = categorize_armor_complete(optimal_dec_armors);
 
     const is_gear_satisfy_requirement = (gear, required_skills) => {
         const total_points = get_total_points(gear);
