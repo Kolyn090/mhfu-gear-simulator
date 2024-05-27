@@ -1,3 +1,11 @@
+/**
+ * Get a more complete version of the 
+ * 
+ * @param {*} decorated_equipment 
+ * @param {*} valid_equipments 
+ * @param {*} valid_decorations 
+ * @returns 
+ */
 const get_decorated_equipment_complete = (decorated_equipment, valid_equipments, valid_decorations) => {
     return {
         "equipment": valid_equipments.find(v => v["id"] === decorated_equipment["equipment-id"]),

@@ -108,7 +108,8 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
                 for (waist of parts["waist"]) {
                     for (legging of parts["legging"]) {
                         for (m_weapon of decorated_weapon_complete) {
-                            if (is_gear_satisfy_requirement([helmet, plate, gauntlet, waist, legging, m_weapon], required_skills)) {
+                            if (is_gear_satisfy_requirement([helmet, plate, gauntlet, waist, legging, m_weapon], 
+                                required_skills)) {
                                 print_result(helmet, plate, gauntlet, waist, legging, m_weapon);
                                 return;
                             }
@@ -146,7 +147,11 @@ const optimized = (skill_names, armor_filter, weapon_slots) => {
         return required_skills.every(required_skill => {
             return Object.keys(so_far).some(skill_name => {
                 if (required_skill["skill-point"] === skill_name) {
-                    return so_far[skill_name] >= required_skill["points"];
+                    if (required_skill["points"] > 0) {
+                        return so_far[skill_name] >= required_skill["points"];
+                    } else {
+                        return so_far[skill_name] <= required_skill["points"];
+                    }
                 }
                 else {
                     return false;
@@ -179,7 +184,7 @@ const optimized = (skill_names, armor_filter, weapon_slots) => {
     }
 };
 
-const skill_names = ["Sharpness +1", "Reckless Abandon +3", "Sharp Sword"];
+const skill_names = ["Defense -40", "Sharpening Skl Inc", "Flute Expert"];
 const filter = (armor) => armor.filter(a=>a["hunter-type"] !== "G").filter(a=>a["rare"]>=5);
 const weapon_slots = 1;
 

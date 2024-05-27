@@ -8,6 +8,7 @@
  * }
  * 
  * DecoratedEquipment {
+ *  SkillPoint[]
  *  equipment_id,
  *  decoration_id[]
  * }
@@ -25,7 +26,7 @@ const insert_decorations = (equipment, possible_decorations) => {
         const is_result_contain = () => {
             for (let i = 0; i < result.length; i++) {
                 if (result[i]["equipment-id"] === decorated_equipment["equipment-id"] &&
-                    is_array_equal(result[i]["decoration-ids"], decorated_equipment["decoration-ids"])) {
+                    is_list_equal(result[i]["decoration-ids"], decorated_equipment["decoration-ids"])) {
                     return true;
                 }
             }
@@ -80,7 +81,14 @@ const insert_decorations = (equipment, possible_decorations) => {
     return result;
 }; 
 
-const is_array_equal= (a, b) => {
+/**
+ * Check whether two lists are equal.
+ * 
+ * @param {int[]} a List to be compared
+ * @param {int[]} b List to be compared
+ * @returns True if two given arries are equal, otherwise false
+ */
+const is_list_equal = (a, b) => {
     /* c8 ignore next */
     if (a === b) return true;
     /* c8 ignore next */
@@ -91,7 +99,17 @@ const is_array_equal= (a, b) => {
     return a_sort.every((val, i) => val === b_sort[i]);
 }
 
-// Returns a DecoratedEquipment
+/**
+ * Decorate an equipment. In the end returns a new object
+ * consists of 
+ * 1. the total skill points of the equipment after decoration, 
+ * 2. the id of the equipment, 
+ * 3. all id for the used decorations.
+ * 
+ * @param {*} equipment The equipment to be decorated
+ * @param {*} used_decorations The decorations to be used
+ * @returns The given equipment with given decorations
+ */
 const make_decorated_equipment = (equipment, used_decorations) => {  
     const skill_map = new Map();
 
