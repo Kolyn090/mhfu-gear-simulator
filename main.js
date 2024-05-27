@@ -32,7 +32,6 @@ const brute_force = () => {
     const optimal_dec_armors = discard_outclassed_armors_complete(decorated_armors_complete, required_skills);
     // console.log(decorated_armors_complete.length);
     // console.log(optimal_dec_armors.length);
-
     const decorated_weapon_complete = decorated_weapon.map(w => get_decorated_armor_complete(w, [weapon], valid_decorations));
     const parts = categorize_armor_complete(optimal_dec_armors);
 

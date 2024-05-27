@@ -42,7 +42,7 @@ const get_valid_armors = (required_skills) => {
  * @return {Decoration[]} A list of decorations with valid skills points
  */
 const get_valid_decorations = (required_skills) => {
-    return db.DECORATIONS.filter(a => {
+    const decorations = db.DECORATIONS.filter(a => {
         return a["skill-points"].some(skill_point => {
             return required_skills.some(required_skill => {
                 return skill_point["name"] === required_skill["skill-point"] && 
@@ -51,6 +51,13 @@ const get_valid_decorations = (required_skills) => {
             });
         });
     });
+    const set = [];
+    for (let i = 0; i < decorations.length; i++) {
+        if (set.find(x => x["name"] === decorations[i]["name"])) continue;
+        set.push(decorations[i]);
+    }
+
+    return set;
 };
 
 /**
@@ -121,9 +128,15 @@ const discard_outclassed_armors_complete = (decorated_armors_complete, required_
                 const competitor_skill_point = competitor["skill-points"]
                     .find(skill_point => skill_point["name"] === required_skill["skill-point"]);
                 const competitor_point_for_skill = competitor_skill_point ? competitor_skill_point["points"] : 0;
-                return required_skill["points"] > 0 ? 
-                    curr_point_for_skill < competitor_point_for_skill : 
-                    curr_point_for_skill > competitor_point_for_skill;
+                if (curr["armor"]["id"] === competitor["armor"]["id"]) {
+                    return required_skill["points"] > 0 ? 
+                        curr_point_for_skill <= competitor_point_for_skill : 
+                        curr_point_for_skill >= competitor_point_for_skill;
+                } else {
+                    return required_skill["points"] > 0 ? 
+                        curr_point_for_skill < competitor_point_for_skill : 
+                        curr_point_for_skill > competitor_point_for_skill;
+                }
             });
         });
         // if (!result) {
