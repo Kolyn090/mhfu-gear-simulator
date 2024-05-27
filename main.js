@@ -9,17 +9,16 @@ const get_decorated_armor_complete = require('./src/armor_processor').get_decora
 const categorize_armor_complete = require('./src/armor_processor').categorize_armor_complete;
 
 
-const brute_force = () => {
-    const skill_names = ["Sharpness +1", "Reckless Abandon +3", "Sharp Sword"];
+const brute_force = (skill_names, armor_filter, weapon_slots) => {
     const required_skills = get_required_skills(skill_names);
-    const valid_armors = get_valid_armors(required_skills).filter(a=>a["hunter-type"] !== "G").filter(a=>a["rare"]>=5);
+    const valid_armors = armor_filter(get_valid_armors(required_skills));
     const valid_decorations = get_valid_decorations(required_skills);
     const optimal_armors = discard_outclassed_armors(valid_armors, required_skills);
     const decorated_armors = optimal_armors.map(armor => insert_decorations(armor, valid_decorations)).flat();
     const weapon = {
         "id": -1,
         "name": "Weapon",
-        "slots": 1,
+        "slots": weapon_slots,
         "skill-points": []
     };
     const decorated_weapon = insert_decorations(weapon, valid_decorations);
@@ -100,4 +99,7 @@ const brute_force = () => {
     }
 };
 
-brute_force();
+const skill_names = ["Sharpness +1", "Reckless Abandon +3", "Sharp Sword"];
+const filter = (armor) => armor.filter(a=>a["hunter-type"] !== "G").filter(a=>a["rare"]>=5);
+const weapon_slots = 1;
+brute_force(skill_names, filter, weapon_slots);
