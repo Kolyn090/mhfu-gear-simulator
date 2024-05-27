@@ -1,6 +1,5 @@
-const determine_skill_points_of = (decorated_equipment, valid_equipments, valid_decorations) => {
-    const equipment = valid_equipments.find(v=>v["id"] === decorated_equipment["equipment-id"]);
-    const used_decorations = decorated_equipment["decoration-ids"].map(d=>valid_decorations.find(v=>v["id"] === d));
+const determine_skill_points_of = (decorated_equipment, equipment, valid_decorations) => {
+    const used_decorations = decorated_equipment["decorations"]["id"].map(d=>valid_decorations.find(v=>v["id"] === d));
     const skill_map = new Map();
     
     equipment["skill-points"].forEach(skill_point => {

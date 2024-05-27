@@ -205,14 +205,20 @@ const test_decoration3 = {
 
 const expecting_points = (skill_points, skill_name, expect_val) => {
     expect(skill_points.find(skill_point => skill_point["name"] === skill_name)["points"]).toBe(expect_val);
-}
-/*
+};
+
+const get_armor_by_id = (id, valid_armors) => {
+    return valid_armors.find(v=>v["id"] === id);
+};
+
 it('insertes three same slot-1 decoration on a slot-3 armor', () => {
     const insert1 = insert_decorations(test_armor3, [test_decoration1]);
-    expect(insert1[0]["equipment-id"]).toBe(3852);
-    expect(insert1[0]["decoration-ids"][0]).toBe(0);
+    expect(insert1[0]["equipment"]["id"]).toBe(3852);
+    expect(insert1[0]["decorations"]["id"][0]).toBe(0);
 
-    const skill_points = determine_skill_points_of(insert1[0], [test_armor3], [test_decoration1]);
+    const skill_points = determine_skill_points_of(insert1[0], 
+                                                    get_armor_by_id(insert1[0]["equipment"]["id"], [test_armor3]), 
+                                                    [test_decoration1]);
     expecting_points(skill_points, "SteadyHand", 2);
     expecting_points(skill_points, "Fate", -3);
     expecting_points(skill_points, "Constitutn", 2);
@@ -221,10 +227,12 @@ it('insertes three same slot-1 decoration on a slot-3 armor', () => {
 
 it('insertes one slot-3 decoration on a slot-3 armor', () => {
     const insert3 = insert_decorations(test_armor3, [test_decoration3]);
-    expect(insert3[0]["equipment-id"]).toBe(3852);
-    expect(insert3[0]["decoration-ids"][0]).toBe(2);
+    expect(insert3[0]["equipment"]["id"]).toBe(3852);
+    expect(insert3[0]["decorations"]["id"][0]).toBe(2);
     
-    const skill_points = determine_skill_points_of(insert3[0], [test_armor3], [test_decoration3]);
+    const skill_points = determine_skill_points_of(insert3[0], 
+                                                    get_armor_by_id(insert3[0]["equipment"]["id"], [test_armor3]),
+                                                    [test_decoration3]);
     expecting_points(skill_points, "SteadyHand", 2);
     expecting_points(skill_points, "Fate", -3);
     expecting_points(skill_points, "Constitutn", 2);
@@ -233,9 +241,9 @@ it('insertes one slot-3 decoration on a slot-3 armor', () => {
 
 it('insertes one slot-1 and one slot-2 decorations on a slot-3 armor', () => {
     const insert12 = insert_decorations(test_armor3, [test_decoration1, test_decoration2]);
-    expect(insert12[0]["equipment-id"]).toBe(3852);
+    expect(insert12[0]["equipment"]["id"]).toBe(3852);
 
-    const dec_ids = insert12[0]["decoration-ids"];
+    const dec_ids = insert12[0]["decorations"]["id"];
     const slot2_and_slot1 = 
         dec_ids.length === 2 &&
         ((dec_ids[0] === 0 && dec_ids[1] === 1) ||
@@ -273,9 +281,9 @@ it('does not contain duplicate from the decorated armor list', () => {
     for (let i = 0; i < decorated_armors.length; i++) {
         for (let j = 0; j < decorated_armors.length; j++) {
             if (i === j) continue;
-            const is_armor_id_same = decorated_armors[i]["equipment-id"] === decorated_armors[j]["equipment-id"];
-            const are_decoration_ids_same = is_array_equal(decorated_armors[i]["decoration-ids"], 
-                                                                    decorated_armors[j]["decoration-ids"]);
+            const is_armor_id_same = decorated_armors[i]["equipment"]["id"] === decorated_armors[j]["equipment"]["id"];
+            const are_decoration_ids_same = is_array_equal(decorated_armors[i]["decorations"]["id"], 
+                                                                    decorated_armors[j]["decorations"]["id"]);
             const is_the_same = is_armor_id_same && are_decoration_ids_same;
             if (is_the_same) {
                 result = false;
@@ -286,4 +294,3 @@ it('does not contain duplicate from the decorated armor list', () => {
 
     expect(result).toBe(true);
 });
-*/

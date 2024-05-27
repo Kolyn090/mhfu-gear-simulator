@@ -40,7 +40,7 @@ const print_decorated_armors_to_output = (dec_armors) => {
         return {
             "armor": a["equipment"]["name"],
             "part": a["equipment"]["part"],
-            "decorations": a["decorations-name"]
+            "decorations": a["decorations"]["name"]
         }
     }), null, '    '));
 };
@@ -65,13 +65,13 @@ const print_result = (helmet, plate, gauntlet, waist, legging, weapon) => {
                 gauntlet["equipment"]["name"] + ", ", 
                 waist["equipment"]["name"] + ", ", 
                 legging["equipment"]["name"]);
-    console.log("\n helmet: \t", helmet["decorations-name"], "\n",
-                "plate: \t", plate["decorations-name"], "\n",
-                "gauntlet: \t", gauntlet["decorations-name"], "\n",
-                "waist: \t", waist["decorations-name"], "\n",
-                "legging: \t", legging["decorations-name"], "\n",
-                "weapon: \t", weapon["decorations-name"], "\n");
-    
+    console.log("\n helmet: \t", helmet["decorations"]["name"], "\n",
+                "plate: \t", plate["decorations"]["name"], "\n",
+                "gauntlet: \t", gauntlet["decorations"]["name"], "\n",
+                "waist: \t", waist["decorations"]["name"], "\n",
+                "legging: \t", legging["decorations"]["name"], "\n",
+                "weapon: \t", weapon["decorations"]["name"], "\n");
+
     console.log(get_total_points([helmet, plate, gauntlet, waist, legging, weapon]));
 };
 

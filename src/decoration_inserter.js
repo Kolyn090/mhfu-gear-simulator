@@ -9,8 +9,8 @@
  * 
  * DecoratedEquipment {
  *  SkillPoint[]
- *  equipment_id,
- *  decoration_id[]
+ *  equipment,
+ *  decoration[]
  * }
  * 
  * @param {*} equipment 
@@ -37,7 +37,7 @@ const insert_decorations = (equipment, possible_decorations) => {
         const is_result_contain = () => {
             for (let i = 0; i < result.length; i++) {
                 if (result[i]["equipment-id"] === decorated_equipment["equipment-id"] &&
-                    is_list_equal(result[i]["decoration-ids"], decorated_equipment["decoration-ids"])) {
+                    is_list_equal(result[i]["decorations"]["id"], decorated_equipment["decorations"]["id"])) {
                     return true;
                 }
             }
@@ -131,9 +131,15 @@ const make_decorated_equipment = (equipment, used_decorations) => {
 
     return {
         "skill-points": skill_points,
-        "equipment": equipment,
-        "decoration-ids": used_decorations.map(dec => dec["id"]),
-        "decorations-name": used_decorations.map(dec => dec["name"])
+        "equipment": {
+            "name": equipment["name"],
+            "id": equipment["id"],
+            "part": equipment["part"]
+        },
+        "decorations": {
+            "id": used_decorations.map(dec => dec["id"]),
+            "name": used_decorations.map(dec => dec["name"])
+        }
     }
 };
 
