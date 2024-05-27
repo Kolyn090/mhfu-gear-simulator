@@ -121,7 +121,10 @@ const discard_outclassed_armors_complete = (decorated_armors_complete, required_
             if (curr["id"] === competitor["id"]) return false;
             if (curr["armor"]["part"] !== competitor["armor"]["part"]) return false;
             // Check if the competitor will 'win'
-            return required_skills.every(required_skill => {
+            const curr_score = calculate_decorated_armor_score(curr, required_skills);
+            const competitor_score = calculate_decorated_armor_score(competitor, required_skills);
+            return (curr["armor"]["id"] === competitor["armor"]["id"] && curr_score < competitor_score) ||
+            required_skills.every(required_skill => {
                 const curr_skill_point = curr["skill-points"]
                     .find(skill_point => skill_point["name"] === required_skill["skill-point"]);
                 const curr_point_for_skill = curr_skill_point ? curr_skill_point["points"] : 0;
@@ -145,6 +148,21 @@ const discard_outclassed_armors_complete = (decorated_armors_complete, required_
         return result;
     });
 };
+
+// TODO: optimize the score system
+const calculate_decorated_armor_score = (armor, required_skills) => {
+    const scalar = required_skills.map(required_skill => {
+        return {
+            "name": required_skill["skill-point"],
+            "points": Math.abs(required_skill["points"] / 10)
+        }
+    });
+    return armor["skill-points"].reduce((acc, curr) => {
+        const skill = scalar.find(s => s["name"] === curr["name"]);
+        if (skill === undefined) return acc;
+        return acc + skill["points"] * curr["points"];
+    }, 0);
+}
 
 module.exports = {
     get_valid_armors: get_valid_armors,

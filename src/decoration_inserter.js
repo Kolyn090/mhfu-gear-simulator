@@ -92,8 +92,34 @@ const is_array_equal= (a, b) => {
 }
 
 // Returns a DecoratedArmor
-const make_decorated_armor = (armor, used_decorations) => {    
+const make_decorated_armor = (armor, used_decorations) => {  
+    const skill_map = new Map();
+
+    armor["skill-points"].forEach(skill_point => {
+        skill_map.set(skill_point["name"], skill_point["points"]);
+    });
+    used_decorations.forEach(dec => {
+        dec["skill-points"].forEach(skill_point => {
+            if (skill_map.get(skill_point["name"]) !== undefined) {
+                skill_map.set(skill_point["name"], 
+                            skill_map.get(skill_point["name"]) +
+                            skill_point["points"]);
+            } else {
+                skill_map.set(skill_point["name"], 
+                            skill_point["points"]);
+            }
+        });
+    });
+    const skill_points = [];
+    skill_map.forEach((val, key) => {
+        skill_points.push({
+            "name": key,
+            "points": val
+        });
+    });
+
     return {
+        "skill-points": skill_points,
         "armor-id": armor["id"],
         "decoration-ids": used_decorations.map(dec => dec["id"])
     }

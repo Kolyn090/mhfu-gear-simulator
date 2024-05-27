@@ -32,28 +32,49 @@ const brute_force = () => {
     const optimal_dec_armors = discard_outclassed_armors_complete(decorated_armors_complete, required_skills);
     // console.log(decorated_armors_complete.length);
     // console.log(optimal_dec_armors.length);
+    require('fs').writeFileSync('./output.json', JSON.stringify(optimal_dec_armors.map(a=>{
+        return {
+            "armor": a["armor"]["name"],
+            "part": a["armor"]["part"],
+            "decorations": a["decorations"].map(d=>d["name"])
+        }
+    }), null, '    '));
     const decorated_weapon_complete = decorated_weapon.map(w => get_decorated_armor_complete(w, [weapon], valid_decorations));
     const parts = categorize_armor_complete(optimal_dec_armors);
 
     const is_gear_satisfy_requirement = (gear, required_skills) => {
-        const total_points = get_total_points(gear);
-        return required_skills.every(skill => {
-            const from_total = total_points.find(x => x["name"] === skill["skill-point"]);
-            if (from_total === undefined) 
-            {
-                // console.log(skill["name"]);
-                // console.log("You have: " + 0);
-                // console.log("Requires: " + skill["points"]);
-                return false
-            };
-            const from_total_points = from_total["points"];
-            const required_points = skill["points"];
-            // console.log(skill["name"]);
-            // console.log("You have: " + from_total_points);
-            // console.log("Requires: " + required_points);
-            if (from_total_points >= required_points) return true;
-            return false;
+        const temp = {};
+        required_skills.map(required_skill => {
+            temp[required_skill["skill-point"]] = required_skill["points"]
         });
+
+        for (let i = 0; i < gear.length; i++) {
+            const skill_points = gear[i]["skill-points"];
+            skill_points.map(skill_point => {
+                if (temp[skill_point["name"]] !== undefined)
+                    temp[skill_point["name"]] -= skill_point["points"];
+            });
+        }
+        return Object.values(temp).every(v => v < 0);
+
+        // const total_points = get_total_points(gear);
+        // return required_skills.every(skill => {
+        //     const from_total = total_points.find(x => x["name"] === skill["skill-point"]);
+        //     if (from_total === undefined) 
+        //     {
+        //         // console.log(skill["name"]);
+        //         // console.log("You have: " + 0);
+        //         // console.log("Requires: " + skill["points"]);
+        //         return false
+        //     };
+        //     const from_total_points = from_total["points"];
+        //     const required_points = skill["points"];
+        //     // console.log(skill["name"]);
+        //     // console.log("You have: " + from_total_points);
+        //     // console.log("Requires: " + required_points);
+        //     if (from_total_points >= required_points) return true;
+        //     return false;
+        // });
     };
 
     const get_total_points = (gear) => {
