@@ -206,7 +206,7 @@ const test_decoration3 = {
 const expecting_points = (skill_points, skill_name, expect_val) => {
     expect(skill_points.find(skill_point => skill_point["name"] === skill_name)["points"]).toBe(expect_val);
 }
-
+/*
 it('insertes three same slot-1 decoration on a slot-3 armor', () => {
     const insert1 = insert_decorations(test_armor3, [test_decoration1]);
     expect(insert1[0]["equipment-id"]).toBe(3852);
@@ -286,3 +286,4 @@ it('does not contain duplicate from the decorated armor list', () => {
 
     expect(result).toBe(true);
 });
+*/

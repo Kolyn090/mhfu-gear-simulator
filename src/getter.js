@@ -115,9 +115,9 @@ const discard_outclassed_armors = (valid_armors, required_skills) => {
     });
 };
 
-const discard_outclassed_armors_complete = (decorated_armors_complete, required_skills) => {
-    return decorated_armors_complete.filter(curr => {
-        const result = !decorated_armors_complete.some(competitor => {
+const discard_outclassed_decorated_armors = (decorated_armors, required_skills) => {
+    return decorated_armors.filter(curr => {
+        const result = !decorated_armors.some(competitor => {
             if (curr["id"] === competitor["id"]) return false;
             if (curr["equipment"]["part"] !== competitor["equipment"]["part"]) return false;
             // Check if the competitor will 'win'
@@ -151,5 +151,5 @@ module.exports = {
     get_valid_decorations: get_valid_decorations,
     get_required_skills: get_required_skills,
     discard_outclassed_armors: discard_outclassed_armors,
-    discard_outclassed_armors_complete: discard_outclassed_armors_complete
+    discard_outclassed_decorated_armors: discard_outclassed_decorated_armors
 };

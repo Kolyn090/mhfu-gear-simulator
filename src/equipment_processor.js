@@ -1,19 +1,3 @@
-/**
- * Get a more complete version of the 
- * 
- * @param {*} decorated_equipment 
- * @param {*} valid_equipments 
- * @param {*} valid_decorations 
- * @returns 
- */
-const get_decorated_equipment_complete = (decorated_equipment, valid_equipments, valid_decorations) => {
-    return {
-        "equipment": valid_equipments.find(v => v["id"] === decorated_equipment["equipment-id"]),
-        "decorations-name": decorated_equipment["decoration-ids"].map(d => valid_decorations.find(v=>v["id"] === d)["name"]),
-        "skill-points": determine_skill_points_of(decorated_equipment, valid_equipments, valid_decorations)
-    };
-}
-
 const determine_skill_points_of = (decorated_equipment, valid_equipments, valid_decorations) => {
     const equipment = valid_equipments.find(v=>v["id"] === decorated_equipment["equipment-id"]);
     const used_decorations = decorated_equipment["decoration-ids"].map(d=>valid_decorations.find(v=>v["id"] === d));
@@ -46,7 +30,7 @@ const determine_skill_points_of = (decorated_equipment, valid_equipments, valid_
     return skill_points;
 };
 
-const categorize_equipment_complete = (decorated_equipments_complete) => {
+const categorize_decorated_equipments = (decorated_equipments) => {
     const result = {
         "helmet": [],
         "plate": [],
@@ -54,14 +38,13 @@ const categorize_equipment_complete = (decorated_equipments_complete) => {
         "waist": [],
         "legging": []
     };
-    for (let i = 0; i < decorated_equipments_complete.length; i++) {
-        result[decorated_equipments_complete[i]["equipment"]["part"]].push(decorated_equipments_complete[i]);
+    for (let i = 0; i < decorated_equipments.length; i++) {
+        result[decorated_equipments[i]["equipment"]["part"]].push(decorated_equipments[i]);
     }
     return result;
-}
+};
 
 module.exports = {
     determine_skill_points_of: determine_skill_points_of,
-    get_decorated_equipment_complete: get_decorated_equipment_complete,
-    categorize_equipment_complete: categorize_equipment_complete,
+    categorize_decorated_equipments: categorize_decorated_equipments,
 };

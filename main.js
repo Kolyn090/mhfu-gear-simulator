@@ -3,10 +3,9 @@ const get_valid_armors = getter.get_valid_armors;
 const get_valid_decorations = getter.get_valid_decorations;
 const get_required_skills = getter.get_required_skills;
 const discard_outclassed_armors = getter.discard_outclassed_armors;
-const discard_outclassed_armors_complete = getter.discard_outclassed_armors_complete;
+const discard_outclassed_decorated_armors = getter.discard_outclassed_decorated_armors;
 const insert_decorations = require('./src/decoration_inserter').insert_decorations;
-const get_decorated_equipment_complete = require('./src/equipment_processor').get_decorated_equipment_complete;
-const categorize_equipment_complete = require('./src/equipment_processor').categorize_equipment_complete;
+const categorize_decorated_equipments = require('./src/equipment_processor').categorize_decorated_equipments;
 
 
 const get_data = (skill_names, armor_filter, weapon_slots) => {
@@ -14,7 +13,9 @@ const get_data = (skill_names, armor_filter, weapon_slots) => {
     const valid_armors = armor_filter(get_valid_armors(required_skills));
     const valid_decorations = get_valid_decorations(required_skills);
     const optimal_armors = discard_outclassed_armors(valid_armors, required_skills);
-    const decorated_armors = optimal_armors.map(armor => insert_decorations(armor, valid_decorations)).flat();
+    const decorated_armors = optimal_armors.map(armor => insert_decorations(armor, valid_decorations))
+                                            .flat()
+                                            .map((a, i) => { a["id"] = i; return a; });
     const weapon = {
         "id": -1,
         "name": "Weapon",
@@ -22,20 +23,14 @@ const get_data = (skill_names, armor_filter, weapon_slots) => {
         "skill-points": []
     };
     const decorated_weapon = insert_decorations(weapon, valid_decorations);
-    const decorated_armors_complete = decorated_armors.map((a, i) => {
-        const result = get_decorated_equipment_complete(a, valid_armors, valid_decorations);
-        result["id"] = i;
-        return result;
-    });
-    const optimal_dec_armors = discard_outclassed_armors_complete(decorated_armors_complete, required_skills);
-    const decorated_weapon_complete = decorated_weapon.map(w => get_decorated_equipment_complete(w, [weapon], valid_decorations));
-    const parts = categorize_equipment_complete(optimal_dec_armors);
+    const optimal_decorated_armors = discard_outclassed_decorated_armors(decorated_armors, required_skills);
+    const parts = categorize_decorated_equipments(optimal_decorated_armors);
     const result = [];
     result.push(required_skills);
-    result.push(decorated_weapon_complete);
+    result.push(decorated_weapon);
     result.push(parts);
 
-    print_decorated_armors_to_output(optimal_dec_armors);
+    print_decorated_armors_to_output(optimal_decorated_armors);
 
     return result;
 };
@@ -83,7 +78,7 @@ const print_result = (helmet, plate, gauntlet, waist, legging, weapon) => {
 const brute_force = (skill_names, armor_filter, weapon_slots) => {
     const data = get_data(skill_names, armor_filter, weapon_slots);
     const required_skills = data[0];
-    const decorated_weapon_complete = data[1];
+    const decorated_weapon = data[1];
     const parts = data[2];
 
     const is_gear_satisfy_requirement = (gear, required_skills) => {
@@ -107,7 +102,7 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
             for (gauntlet of parts["gauntlet"]) {
                 for (waist of parts["waist"]) {
                     for (legging of parts["legging"]) {
-                        for (m_weapon of decorated_weapon_complete) {
+                        for (m_weapon of decorated_weapon) {
                             if (is_gear_satisfy_requirement([helmet, plate, gauntlet, waist, legging, m_weapon], 
                                 required_skills)) {
                                 print_result(helmet, plate, gauntlet, waist, legging, m_weapon);
@@ -124,7 +119,7 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
 const optimized = (skill_names, armor_filter, weapon_slots) => {
     const data = get_data(skill_names, armor_filter, weapon_slots);
     const required_skills = data[0];
-    const decorated_weapon_complete = data[1];
+    const decorated_weapon = data[1];
     const parts = data[2];
 
     const get_skill_points_so_far = (prev, armor, required_skills) => {
@@ -170,7 +165,7 @@ const optimized = (skill_names, armor_filter, weapon_slots) => {
                     const so_far3 = get_skill_points_so_far(so_far2, waist, required_skills);
                     for (legging of parts["legging"]) {
                         const so_far4 = get_skill_points_so_far(so_far3, legging, required_skills);
-                        for (m_weapon of decorated_weapon_complete) {
+                        for (m_weapon of decorated_weapon) {
                             const so_far5 = get_skill_points_so_far(so_far4, m_weapon, required_skills);
                             if (is_gear_satisfy_requirement(so_far5, required_skills)) {
                                 print_result(helmet, plate, gauntlet, waist, legging, m_weapon);

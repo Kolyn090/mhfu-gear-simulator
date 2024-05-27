@@ -22,6 +22,17 @@ const insert_decorations = (equipment, possible_decorations) => {
     const result = [];
     let curr_slots = slots;
 
+    const is_list_equal = (a, b) => {
+        /* c8 ignore next */
+        if (a === b) return true;
+        /* c8 ignore next */
+        if (a === null || b === null) return false;
+        if (a.length !== b.length) return false;
+        const a_sort = a.sort((x, y) => x-y);
+        const b_sort = b.sort((x, y) => x-y);
+        return a_sort.every((val, i) => val === b_sort[i]);
+    };
+
     const push_to_result = (decorated_equipment) => {
         const is_result_contain = () => {
             for (let i = 0; i < result.length; i++) {
@@ -82,24 +93,6 @@ const insert_decorations = (equipment, possible_decorations) => {
 }; 
 
 /**
- * Check whether two lists are equal.
- * 
- * @param {int[]} a List to be compared
- * @param {int[]} b List to be compared
- * @returns True if two given arries are equal, otherwise false
- */
-const is_list_equal = (a, b) => {
-    /* c8 ignore next */
-    if (a === b) return true;
-    /* c8 ignore next */
-    if (a === null || b === null) return false;
-    if (a.length !== b.length) return false;
-    const a_sort = a.sort((x, y) => x-y);
-    const b_sort = b.sort((x, y) => x-y);
-    return a_sort.every((val, i) => val === b_sort[i]);
-}
-
-/**
  * Decorate an equipment. In the end returns a new object
  * consists of 
  * 1. the total skill points of the equipment after decoration, 
@@ -138,8 +131,9 @@ const make_decorated_equipment = (equipment, used_decorations) => {
 
     return {
         "skill-points": skill_points,
-        "equipment-id": equipment["id"],
-        "decoration-ids": used_decorations.map(dec => dec["id"])
+        "equipment": equipment,
+        "decoration-ids": used_decorations.map(dec => dec["id"]),
+        "decorations-name": used_decorations.map(dec => dec["name"])
     }
 };
 
