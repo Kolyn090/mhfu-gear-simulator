@@ -1,17 +1,17 @@
-const get_decorated_armor_complete = (decorated_armor, valid_armors, valid_decorations) => {
+const get_decorated_equipment_complete = (decorated_equipment, valid_equipments, valid_decorations) => {
     return {
-        "armor": valid_armors.find(v => v["id"] === decorated_armor["armor-id"]),
-        "decorations-name": decorated_armor["decoration-ids"].map(d => valid_decorations.find(v=>v["id"] === d)["name"]),
-        "skill-points": determine_skill_points_of(decorated_armor, valid_armors, valid_decorations)
+        "equipment": valid_equipments.find(v => v["id"] === decorated_equipment["equipment-id"]),
+        "decorations-name": decorated_equipment["decoration-ids"].map(d => valid_decorations.find(v=>v["id"] === d)["name"]),
+        "skill-points": determine_skill_points_of(decorated_equipment, valid_equipments, valid_decorations)
     };
 }
 
-const determine_skill_points_of = (decorated_armor, valid_armors, valid_decorations) => {
-    const armor = valid_armors.find(v=>v["id"] === decorated_armor["armor-id"]);
-    const used_decorations = decorated_armor["decoration-ids"].map(d=>valid_decorations.find(v=>v["id"] === d));
+const determine_skill_points_of = (decorated_equipment, valid_equipments, valid_decorations) => {
+    const equipment = valid_equipments.find(v=>v["id"] === decorated_equipment["equipment-id"]);
+    const used_decorations = decorated_equipment["decoration-ids"].map(d=>valid_decorations.find(v=>v["id"] === d));
     const skill_map = new Map();
     
-    armor["skill-points"].forEach(skill_point => {
+    equipment["skill-points"].forEach(skill_point => {
         skill_map.set(skill_point["name"], skill_point["points"]);
     });
     used_decorations.forEach(dec => {
@@ -38,7 +38,7 @@ const determine_skill_points_of = (decorated_armor, valid_armors, valid_decorati
     return skill_points;
 };
 
-const categorize_armor_complete = (decorated_armors_complete) => {
+const categorize_equipment_complete = (decorated_equipments_complete) => {
     const result = {
         "helmet": [],
         "plate": [],
@@ -46,14 +46,14 @@ const categorize_armor_complete = (decorated_armors_complete) => {
         "waist": [],
         "legging": []
     };
-    for (let i = 0; i < decorated_armors_complete.length; i++) {
-        result[decorated_armors_complete[i]["armor"]["part"]].push(decorated_armors_complete[i]);
+    for (let i = 0; i < decorated_equipments_complete.length; i++) {
+        result[decorated_equipments_complete[i]["equipment"]["part"]].push(decorated_equipments_complete[i]);
     }
     return result;
 }
 
 module.exports = {
     determine_skill_points_of: determine_skill_points_of,
-    get_decorated_armor_complete: get_decorated_armor_complete,
-    categorize_armor_complete: categorize_armor_complete,
+    get_decorated_equipment_complete: get_decorated_equipment_complete,
+    categorize_equipment_complete: categorize_equipment_complete,
 };

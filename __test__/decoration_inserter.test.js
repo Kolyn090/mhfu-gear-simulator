@@ -209,7 +209,7 @@ const expecting_points = (skill_points, skill_name, expect_val) => {
 
 it('insertes three same slot-1 decoration on a slot-3 armor', () => {
     const insert1 = insert_decorations(test_armor3, [test_decoration1]);
-    expect(insert1[0]["armor-id"]).toBe(3852);
+    expect(insert1[0]["equipment-id"]).toBe(3852);
     expect(insert1[0]["decoration-ids"][0]).toBe(0);
 
     const skill_points = determine_skill_points_of(insert1[0], [test_armor3], [test_decoration1]);
@@ -221,7 +221,7 @@ it('insertes three same slot-1 decoration on a slot-3 armor', () => {
 
 it('insertes one slot-3 decoration on a slot-3 armor', () => {
     const insert3 = insert_decorations(test_armor3, [test_decoration3]);
-    expect(insert3[0]["armor-id"]).toBe(3852);
+    expect(insert3[0]["equipment-id"]).toBe(3852);
     expect(insert3[0]["decoration-ids"][0]).toBe(2);
     
     const skill_points = determine_skill_points_of(insert3[0], [test_armor3], [test_decoration3]);
@@ -233,7 +233,7 @@ it('insertes one slot-3 decoration on a slot-3 armor', () => {
 
 it('insertes one slot-1 and one slot-2 decorations on a slot-3 armor', () => {
     const insert12 = insert_decorations(test_armor3, [test_decoration1, test_decoration2]);
-    expect(insert12[0]["armor-id"]).toBe(3852);
+    expect(insert12[0]["equipment-id"]).toBe(3852);
 
     const dec_ids = insert12[0]["decoration-ids"];
     const slot2_and_slot1 = 
@@ -273,7 +273,7 @@ it('does not contain duplicate from the decorated armor list', () => {
     for (let i = 0; i < decorated_armors.length; i++) {
         for (let j = 0; j < decorated_armors.length; j++) {
             if (i === j) continue;
-            const is_armor_id_same = decorated_armors[i]["armor-id"] === decorated_armors[j]["armor-id"];
+            const is_armor_id_same = decorated_armors[i]["equipment-id"] === decorated_armors[j]["equipment-id"];
             const are_decoration_ids_same = is_array_equal(decorated_armors[i]["decoration-ids"], 
                                                                     decorated_armors[j]["decoration-ids"]);
             const is_the_same = is_armor_id_same && are_decoration_ids_same;

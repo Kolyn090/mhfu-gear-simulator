@@ -119,7 +119,7 @@ const discard_outclassed_armors_complete = (decorated_armors_complete, required_
     return decorated_armors_complete.filter(curr => {
         const result = !decorated_armors_complete.some(competitor => {
             if (curr["id"] === competitor["id"]) return false;
-            if (curr["armor"]["part"] !== competitor["armor"]["part"]) return false;
+            if (curr["equipment"]["part"] !== competitor["equipment"]["part"]) return false;
             // Check if the competitor will 'win'
             return required_skills.every(required_skill => {
                 const curr_skill_point = curr["skill-points"]
@@ -128,7 +128,7 @@ const discard_outclassed_armors_complete = (decorated_armors_complete, required_
                 const competitor_skill_point = competitor["skill-points"]
                     .find(skill_point => skill_point["name"] === required_skill["skill-point"]);
                 const competitor_point_for_skill = competitor_skill_point ? competitor_skill_point["points"] : 0;
-                if (curr["armor"]["id"] === competitor["armor"]["id"]) {
+                if (curr["equipment"]["id"] === competitor["equipment"]["id"]) {
                     return required_skill["points"] > 0 ? 
                         curr_point_for_skill <= competitor_point_for_skill : 
                         curr_point_for_skill >= competitor_point_for_skill;

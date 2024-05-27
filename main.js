@@ -5,8 +5,8 @@ const get_required_skills = getter.get_required_skills;
 const discard_outclassed_armors = getter.discard_outclassed_armors;
 const discard_outclassed_armors_complete = getter.discard_outclassed_armors_complete;
 const insert_decorations = require('./src/decoration_inserter').insert_decorations;
-const get_decorated_armor_complete = require('./src/armor_processor').get_decorated_armor_complete;
-const categorize_armor_complete = require('./src/armor_processor').categorize_armor_complete;
+const get_decorated_equipment_complete = require('./src/armor_processor').get_decorated_equipment_complete;
+const categorize_equipment_complete = require('./src/armor_processor').categorize_equipment_complete;
 
 
 const brute_force = (skill_names, armor_filter, weapon_slots) => {
@@ -23,7 +23,7 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
     };
     const decorated_weapon = insert_decorations(weapon, valid_decorations);
     const decorated_armors_complete = decorated_armors.map((a, i) => {
-        const result = get_decorated_armor_complete(a, valid_armors, valid_decorations);
+        const result = get_decorated_equipment_complete(a, valid_armors, valid_decorations);
         result["id"] = i;
         return result;
     });
@@ -31,13 +31,14 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
 
     require('fs').writeFileSync('./output.json', JSON.stringify(optimal_dec_armors.map(a=>{
         return {
-            "armor": a["armor"]["name"],
-            "part": a["armor"]["part"],
+            "armor": a["equipment"]["name"],
+            "part": a["equipment"]["part"],
             "decorations": a["decorations-name"]
         }
     }), null, '    '));
-    const decorated_weapon_complete = decorated_weapon.map(w => get_decorated_armor_complete(w, [weapon], valid_decorations));
-    const parts = categorize_armor_complete(optimal_dec_armors);
+
+    const decorated_weapon_complete = decorated_weapon.map(w => get_decorated_equipment_complete(w, [weapon], valid_decorations));
+    const parts = categorize_equipment_complete(optimal_dec_armors);
 
     const is_gear_satisfy_requirement = (gear, required_skills) => {
         const temp = {};
@@ -76,11 +77,11 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
                     for (legging of parts["legging"]) {
                         for (m_weapon of decorated_weapon_complete) {
                             if (is_gear_satisfy_requirement([helmet, plate, gauntlet, waist, legging, m_weapon], required_skills)) {
-                                console.log(helmet["armor"]["name"] + ", ", 
-                                            plate["armor"]["name"] + ", ", 
-                                            gauntlet["armor"]["name"] + ", ", 
-                                            waist["armor"]["name"] + ", ", 
-                                            legging["armor"]["name"]);
+                                console.log(helmet["equipment"]["name"] + ", ", 
+                                            plate["equipment"]["name"] + ", ", 
+                                            gauntlet["equipment"]["name"] + ", ", 
+                                            waist["equipment"]["name"] + ", ", 
+                                            legging["equipment"]["name"]);
                                 console.log("\n helmet: \t", helmet["decorations-name"], "\n",
                                             "plate: \t", plate["decorations-name"], "\n",
                                             "gauntlet: \t", gauntlet["decorations-name"], "\n",

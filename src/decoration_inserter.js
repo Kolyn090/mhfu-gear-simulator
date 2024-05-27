@@ -1,5 +1,5 @@
 /**
- * Get a list of permutations of given armor combined with 
+ * Get a list of permutations of given equipment combined with 
  * all possible decorations to choose from.
  * 
  * SkillPoint {
@@ -7,32 +7,32 @@
  *  points
  * }
  * 
- * DecoratedArmor {
- *  armor_id,
+ * DecoratedEquipment {
+ *  equipment_id,
  *  decoration_id[]
  * }
  * 
- * @param {*} armor 
+ * @param {*} equipment 
  * @param {*} possible_decorations 
- * @return {DecoratedArmor[]} A list of decorated armors
+ * @return {DecoratedEquipment[]} A list of decorated equipments
  */
-const insert_decorations = (armor, possible_decorations) => {
-    const slots = armor["slots"];
+const insert_decorations = (equipment, possible_decorations) => {
+    const slots = equipment["slots"];
     const result = [];
     let curr_slots = slots;
 
-    const push_to_result = (decorated_armor) => {
+    const push_to_result = (decorated_equipment) => {
         const is_result_contain = () => {
             for (let i = 0; i < result.length; i++) {
-                if (result[i]["armor-id"] === decorated_armor["armor-id"] &&
-                    is_array_equal(result[i]["decoration-ids"], decorated_armor["decoration-ids"])) {
+                if (result[i]["equipment-id"] === decorated_equipment["equipment-id"] &&
+                    is_array_equal(result[i]["decoration-ids"], decorated_equipment["decoration-ids"])) {
                     return true;
                 }
             }
             return false;
         }
         if (!is_result_contain()) {
-            result.push(decorated_armor);
+            result.push(decorated_equipment);
         }
     };
 
@@ -43,7 +43,7 @@ const insert_decorations = (armor, possible_decorations) => {
             continue;
         } else if (curr_slots - i_slots === 0) {
             // all decorations used so far
-            push_to_result(make_decorated_armor(armor, [possible_decorations[i]]));
+            push_to_result(make_decorated_equipment(equipment, [possible_decorations[i]]));
             continue;
         } else { // curr_slots > i_slots
             curr_slots -= i_slots;
@@ -53,7 +53,7 @@ const insert_decorations = (armor, possible_decorations) => {
             if (curr_slots - j_slots < 0) {
                 continue;
             } else if (curr_slots - j_slots === 0) {
-                push_to_result(make_decorated_armor(armor, [possible_decorations[i], 
+                push_to_result(make_decorated_equipment(equipment, [possible_decorations[i], 
                                                         possible_decorations[j]]));
                 continue;
             } else { // curr_slots > j_slots
@@ -64,7 +64,7 @@ const insert_decorations = (armor, possible_decorations) => {
                 if (curr_slots - k_slots < 0) {
                     continue;
                 } else if (curr_slots - k_slots === 0) {
-                    push_to_result(make_decorated_armor(armor, [possible_decorations[i], 
+                    push_to_result(make_decorated_equipment(equipment, [possible_decorations[i], 
                                                             possible_decorations[j],
                                                             possible_decorations[k]]));
                     continue;
@@ -91,11 +91,11 @@ const is_array_equal= (a, b) => {
     return a_sort.every((val, i) => val === b_sort[i]);
 }
 
-// Returns a DecoratedArmor
-const make_decorated_armor = (armor, used_decorations) => {  
+// Returns a DecoratedEquipment
+const make_decorated_equipment = (equipment, used_decorations) => {  
     const skill_map = new Map();
 
-    armor["skill-points"].forEach(skill_point => {
+    equipment["skill-points"].forEach(skill_point => {
         skill_map.set(skill_point["name"], skill_point["points"]);
     });
     used_decorations.forEach(dec => {
@@ -120,7 +120,7 @@ const make_decorated_armor = (armor, used_decorations) => {
 
     return {
         "skill-points": skill_points,
-        "armor-id": armor["id"],
+        "equipment-id": equipment["id"],
         "decoration-ids": used_decorations.map(dec => dec["id"])
     }
 };
