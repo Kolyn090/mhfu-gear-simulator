@@ -52,6 +52,8 @@ const get_valid_decorations = (required_skills) => {
         });
     });
     const set = [];
+    // Only keep one copy of decorations with same names (becase the DB keeps
+    // all possible ways to make the same decoration)
     for (let i = 0; i < decorations.length; i++) {
         if (set.find(x => x["name"] === decorations[i]["name"])) continue;
         set.push(decorations[i]);
