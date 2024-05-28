@@ -152,7 +152,7 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
  * @param {Func} armor_filter A filter for armor, can be specific via a closure
  * @param {int} weapon_slots How many slots should the weapon have?
  */
-const optimized = (skill_names, armor_filter, weapon_slots) => {
+const optimized_brute_force = (skill_names, armor_filter, weapon_slots) => {
     const data = get_data(skill_names, armor_filter, weapon_slots);
     const required_skills = data[0];
     const decorated_weapon = data[1];
@@ -224,5 +224,5 @@ const weapon_slots = 1;
 // console.timeEnd("Brute Force");
 
 console.time('Optimized');
-optimized(skill_names, filter, weapon_slots);
+optimized_brute_force(skill_names, filter, weapon_slots);
 console.timeEnd('Optimized');
