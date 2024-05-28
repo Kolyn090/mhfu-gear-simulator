@@ -1,4 +1,14 @@
+/**
+ * Determines skill points of a decorated equipment.
+ * 
+ * @param {DecoratedEquipment} decorated_equipment The decorated equipment
+ * @param {Equipment} equipment The actual equipment to be tested
+ * @param {Decoration[]} valid_decorations All valid decorations
+ * @returns {Skill[]} The decorated equipment's skill points
+ */
 const determine_skill_points_of = (decorated_equipment, equipment, valid_decorations) => {
+    // decorated_equipment does not store the actual equipment nor the decorations
+    // instead, it stores ids.
     const used_decorations = decorated_equipment["decorations"]["id"].map(d=>valid_decorations.find(v=>v["id"] === d));
     const skill_map = new Map();
     
@@ -29,6 +39,13 @@ const determine_skill_points_of = (decorated_equipment, equipment, valid_decorat
     return skill_points;
 };
 
+/**
+ * Categorizes a list of decorated armors by the armor part
+ * 
+ * @param {DecoratedEquipment[]} decorated_equipments A list of decorated armors
+ * @returns {CategorizedEquipments} An object consists the five parts of armor, with
+ *                                  each storing a list of decorated armors
+ */
 const categorize_decorated_equipments = (decorated_equipments) => {
     const result = {
         "helmet": [],

@@ -3,18 +3,22 @@
  * all possible decorations to choose from.
  * 
  * SkillPoint {
- *  name,
- *  points
+ *  "name",
+ *  "points"
  * }
  * 
  * DecoratedEquipment {
- *  SkillPoint[]
- *  equipment,
- *  decoration[]
+ *  "skill-points",
+ *  "equipment": {
+ *      "name", "id", "part"
+ *  },
+ *  "decorations": {
+ *      "id", "name"
+ *  }
  * }
  * 
- * @param {*} equipment 
- * @param {*} possible_decorations 
+ * @param {Equipment} equipment 
+ * @param {Decoration[]} possible_decorations 
  * @return {DecoratedEquipment[]} A list of decorated equipments
  */
 const insert_decorations = (equipment, possible_decorations) => {
@@ -94,14 +98,21 @@ const insert_decorations = (equipment, possible_decorations) => {
 
 /**
  * Decorate an equipment. In the end returns a new object
- * consists of 
- * 1. the total skill points of the equipment after decoration, 
- * 2. the id of the equipment, 
- * 3. all id for the used decorations.
+ * consists of:
  * 
- * @param {*} equipment The equipment to be decorated
- * @param {*} used_decorations The decorations to be used
- * @returns The given equipment with given decorations
+ * DecoratedEquipment {
+ *  "skill-points",
+ *  "equipment": {
+ *      "name", "id", "part"
+ *  },
+ *  "decorations": {
+ *      "id", "name"
+ *  }
+ * }
+ * 
+ * @param {Equipment} equipment The equipment to be decorated
+ * @param {Decoration[]} used_decorations The decorations to be used
+ * @returns {DecoratedEquipment} A special object used to represent a decorated equipment
  */
 const make_decorated_equipment = (equipment, used_decorations) => {  
     const skill_map = new Map();

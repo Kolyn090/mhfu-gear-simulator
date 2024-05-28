@@ -7,6 +7,14 @@ const discard_outclassed_decorated_armors = getter.discard_outclassed_decorated_
 const insert_decorations = require('./src/decoration_inserter').insert_decorations;
 const categorize_decorated_equipments = require('./src/equipment_processor').categorize_decorated_equipments;
 
+/**
+ * Get all necessary structured data to perform gear simulation.
+ * 
+ * @param {string[]} skill_names A list of required skill's names
+ * @param {Func} armor_filter A filter for armor, can be specific via a closure
+ * @param {int} weapon_slots How many slots should the weapon have?
+ * @returns {object[]} All necessary structured data to perform gear simulation.
+ */
 const get_data = (skill_names, armor_filter, weapon_slots) => {
     const required_skills = get_required_skills(skill_names);
     const valid_armors = armor_filter(get_valid_armors(required_skills));
@@ -34,6 +42,11 @@ const get_data = (skill_names, armor_filter, weapon_slots) => {
     return result;
 };
 
+/**
+ * Print all decorated armors to a file called output.json for debug purpose.
+ * 
+ * @param {DecoratedEquipment[]} dec_armors A list of decorated armors;
+ */
 const print_decorated_armors_to_output = (dec_armors) => {
     require('fs').writeFileSync('./output.json', JSON.stringify(dec_armors.map(a=>{
         return {
@@ -44,6 +57,16 @@ const print_decorated_armors_to_output = (dec_armors) => {
     }), null, '    '));
 };
 
+/**
+ * Print the found result by the simulator to console.
+ * 
+ * @param {Equipment} helmet The helmet
+ * @param {Equipment} plate The plate
+ * @param {Equipment} gauntlet The gauntlet
+ * @param {Equipment} waist The waist
+ * @param {Equipment} legging The legging
+ * @param {Equipment} weapon The weapon
+ */
 const print_result = (helmet, plate, gauntlet, waist, legging, weapon) => {
     const get_total_points = (gear) => {
         const result = {};
@@ -74,6 +97,13 @@ const print_result = (helmet, plate, gauntlet, waist, legging, weapon) => {
     console.log(get_total_points([helmet, plate, gauntlet, waist, legging, weapon]));
 };
 
+/**
+ * Attempt to find solution by brute force, and print if it finds one.
+ * 
+ * @param {string[]} skill_names A list of required skill's names
+ * @param {Func} armor_filter A filter for armor, can be specific via a closure
+ * @param {int} weapon_slots How many slots should the weapon have?
+ */
 const brute_force = (skill_names, armor_filter, weapon_slots) => {
     const data = get_data(skill_names, armor_filter, weapon_slots);
     const required_skills = data[0];
@@ -115,6 +145,13 @@ const brute_force = (skill_names, armor_filter, weapon_slots) => {
     }
 };
 
+/**
+ * Attempt to find solution in an optimized manner, and print if it finds one.
+ * 
+ * @param {string[]} skill_names A list of required skill's names
+ * @param {Func} armor_filter A filter for armor, can be specific via a closure
+ * @param {int} weapon_slots How many slots should the weapon have?
+ */
 const optimized = (skill_names, armor_filter, weapon_slots) => {
     const data = get_data(skill_names, armor_filter, weapon_slots);
     const required_skills = data[0];

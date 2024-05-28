@@ -12,7 +12,7 @@ const db = require("./read-db");
  * goes the same with positive skill points.
  * 
  * @param {Skill[]} required_skills A list of required skills
- * @return {Armor[]} A list of armors with valid skills points
+ * @return {Equipment[]} A list of armors with valid skills points
  */
 const get_valid_armors = (required_skills) => {
     // need to filter blademaster/gunner as well
@@ -83,9 +83,9 @@ const get_required_skills = (required_skill_names) => {
  * than its competitor. An armor won't be outclassed
  * by armors from other parts.
  * 
- * @param {Armor[]} valid_armors A list of valid armors
+ * @param {Equipment[]} valid_armors A list of valid armors
  * @param {Skill[]} required_skills A list of required skills
- * @return {Armor[]} The armors not being outclassed by other armors in the same list
+ * @return {Equipment[]} The armors not being outclassed by other armors in the same list
  */
 const discard_outclassed_armors = (valid_armors, required_skills) => {
     return valid_armors.filter(curr => {
@@ -115,6 +115,21 @@ const discard_outclassed_armors = (valid_armors, required_skills) => {
     });
 };
 
+/**
+ * Filter a list of decorated armors so that for every 
+ * armor, its required skill points would not be outclassed
+ * by other armors in the list. Outclassed means that
+ * every required skill points has been surpassed by
+ * another armor in the same & its slot number is less
+ * than its competitor. An armor won't be outclassed
+ * by armors from other parts. If two armors are the 
+ * same, an additional check will be performed to 
+ * further eliminate candidates.
+ * 
+ * @param {DecoratedEquipment[]} decorated_armors A list of decorated armors
+ * @param {Skill[]} required_skills A list of required skills
+ * @returns The decorated armors not being outclassed by other armors in the same list
+ */
 const discard_outclassed_decorated_armors = (decorated_armors, required_skills) => {
     return decorated_armors.filter(curr => {
         const result = !decorated_armors.some(competitor => {
