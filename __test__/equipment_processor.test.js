@@ -21,4 +21,7 @@ it('categorizes decorated equipments', () => {
     const parts = categorize_decorated_equipments(decorated_armors);
     expect(parts["gauntlet"].length).toBeGreaterThan(0);
     expect(parts["waist"].length).toBeGreaterThan(0);
+    expect(parts["helmet"].length).toBe(0);
+    expect(parts["plate"].length).toBe(0);
+    expect(parts["legging"].length).toBe(0);
 });
