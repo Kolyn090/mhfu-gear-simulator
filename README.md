@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/Kolyn090/mhfu-db/blob/main/assets/MHFU_MainTitle.PNG">
-    <img alt="Main title of game Monster Hunter Freedom Unite, taken in my PPSSPP." src="./assets/MHFU_MainTitle.PNG" width="400" />
+    <img alt="Main title of game Monster Hunter Freedom Unite, taken in my PPSSPP." src="https://github.com/Kolyn090/mhfu-db/blob/main/assets/MHFU_MainTitle.PNG" width="400" />
   </a>
 </p>
 
